@@ -7,7 +7,7 @@
 #	A wrapper script for rsync 3.0+ that is capable of producing a bootable clone of a live Mac OS X system.
 #	Features extensive error reporting, automatic logging and stats generation.
 
-#	v1.0 - 17 May 2013
+#	v1.0 - 12 December 2013
 #	Initial release.
 
 #	This script is Copyright © 2013 Jedda Wignall, and is is distributed under the terms of the GNU General Public License.
@@ -156,7 +156,7 @@ fi
 
 # check that the destination is not set to ignore ownership
 vsdbOutput=`/usr/sbin/vsdbutil -c "$dst"`
-echo $vsdbOutput
+
 if echo $vsdbOutput | grep -q -E -o "disabled"; then
 	counterpart_log "Destination ($dst) is set to 'Ignore ownership on this volume'. Volume will not be bootable! Cannot continue with the clone process."
     counterpart_exit 90
