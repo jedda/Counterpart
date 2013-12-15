@@ -79,3 +79,5 @@ Exit codes from 3 through 35 mirror rsync's exit codes (http://wpkg.org/Rsync_ex
 
 ####Support, Bugs & Issues:
 This script is free and open-source, and as such, support may be limited - queries can be directed to [this contact page](http://jedda.me/contact-jedda/), and i'll get back to you as soon as I can. Any issues or bugs should be registered on the project's GitHub [Issue Tracker](https://github.com/jedda/Counterpart/issues).
+
+[![Bitdeli Badge](https://d2weczhvl823v0.cloudfront.net/jedda/counterpart/trend.png)](https://bitdeli.com/free "Bitdeli Badge")
