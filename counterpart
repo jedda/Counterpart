@@ -7,6 +7,12 @@
 #	A wrapper script for rsync 3.0+ that is capable of producing a bootable clone of a live Mac OS X system.
 #	Features extensive error reporting, automatic logging and stats generation.
 
+#	v1.1 - 15 December 2013
+#   Added UID check to ensure Counterpart is running as root.
+#   Added extra logging of host, OS version, and rsync version.
+#	Removed .sh file extension from script.
+#   Removed some messy debug echoes.
+#
 #	v1.0 - 12 December 2013
 #	Initial release.
 
@@ -28,13 +34,7 @@ exclusions=(".Trash" ".Trashes" ".Spotlight-*/" ".DocumentRevisions-*/" "/.fseve
 loggingDirectory="/Library/Logs/Counterpart/"
 pathToRsync="/usr/local/bin/rsync" # this is the default homebrew installed path
 organisationPrefix="me.jedda" # change this if you want to customise the names of stats and flag files on disk
-version="1.0"
-
-if [[ $EUID -ne 0 ]]
-then
-	echo "ERROR - This script must be run as root."
-	exit 1
-fi
+version="1.1"
 
 # functions
 function counterpart_log {
@@ -116,9 +116,19 @@ printf "Support & Updates:\nFor support, bug reports, answers and updates, see h
 exit 0
 fi
 
-# setup our start timestamp and log file
+# setup our start timestamp and log file, and any other script variables
 startTimestamp=`date +%s`
 logPath=$loggingDirectory"Counterpart_"`date -r $startTimestamp +%y-%m-%d_%H-%M-%S`
+host=`hostname`
+osVersion=`sw_vers | awk '/ProductVersion/{print $2}'`
+rsyncVersion=`/usr/local/bin/rsync --version | grep 'version' | sed -E 's/ version ([0-9\.]+).+/\1/'`
+
+# check that we are running as root.
+if [[ $EUID -ne 0 ]]
+then
+	echo "ERROR - Counterpart must be run as root."
+	exit 1
+fi
 
 # check that have the right version of rsync installed
 if [ ! -x "$pathToRsync" ]; then
@@ -132,6 +142,7 @@ fi
 # introduce ourselves
 counterpart_log "Counterpart version $version (`md5 $0 | awk '{ print substr($4,0,6) }'`)."
 counterpart_log "Logging to $logPath."
+counterpart_log "Running on $host ($osVersion) with $rsyncVersion at $pathToRsync"
 
 # check that source is defined
 if [ "$src" == "" ]; then
