@@ -30,6 +30,12 @@ pathToRsync="/usr/local/bin/rsync" # this is the default homebrew installed path
 organisationPrefix="me.jedda" # change this if you want to customise the names of stats and flag files on disk
 version="1.0"
 
+if [[ $EUID -ne 0 ]]
+then
+	echo "ERROR - This script must be run as root."
+	exit 1
+fi
+
 # functions
 function counterpart_log {
 	# create our log directory if required
