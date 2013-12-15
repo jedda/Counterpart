@@ -8,10 +8,10 @@
 #	Features extensive error reporting, automatic logging and stats generation.
 
 #	v1.1 - 15 December 2013
-#   Added UID check to ensure Counterpart is running as root.
-#   Added extra logging of host, OS version, and rsync version.
+#	Added UID check to ensure Counterpart is running as root.
+#	Added extra logging of host, OS version, and rsync version.
 #	Removed .sh file extension from script.
-#   Removed some messy debug echoes.
+#	Removed some messy debug echoes.
 #
 #	v1.0 - 12 December 2013
 #	Initial release.
