@@ -5,7 +5,7 @@ A wrapper script for rsync 3.0+ that is capable of producing a bootable clone of
 Features extensive error handling, automatic logging, stats generation, and a companion Nagios plugin for monitoring clone completion and statistics.
 
 ####Usage
-counterpart.sh -s [source] -d [destination] <options>
+counterpart -s [source] -d [destination] <options>
 
 ####Options
 *	 -e		:	path to exclusion patterns file. this is checked and then passed to rsync as the --exclude-from option.
@@ -15,7 +15,7 @@ counterpart.sh -s [source] -d [destination] <options>
 *	 -h		:	display help.
 
 ####Example
-/Users/jedda/Development/Deployment/GitHub/Counterpart/counterpart.sh -s "/" -d "/Volumes/Bootable Clone" -e "/etc/counterpart\_exclude"
+counterpart -s "/" -d "/Volumes/Bootable Clone" -e "/etc/counterpart\_exclude"
 
 This example will clone a bootable copy of the live Mac OS X system to a disk at /Volumes/Bootable Clone, whilst excluding any file patterns defined in /etc/counterpart_exclude.
 
