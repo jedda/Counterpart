@@ -7,11 +7,15 @@
 #	A wrapper script for rsync 3.0+ that is capable of producing a bootable clone of a live Mac OS X system.
 #	Features extensive error reporting, automatic logging and stats generation.
 
+#	v1.2.1 - 16 April 2014
+#	Added the optional flag -g which allows supply of an organisation prefix in reverse domain notation at runtime, rather than editing the script itself.
+#	Fixed issue with date parsing when GNU date is installed by hardcoding BSD /bin/date as per [https://github.com/jedda/Counterpart/issues/4] (thanks jhegeman!)
+#
 #	v1.2 - 02 April 2014
 #	Added -b option to perform backups of OS X Server data (Open Directory, PostgreSQL & Server.app service settings).
 #	Changed default homebrew install to depend on and install rsync 3.0.9 (3.1.0 is currently broken on OS X)
 #
-#	v1.1 - 15 December 2013
+#	v1.1 - 15 December 2013 
 #	Added UID check to ensure Counterpart is running as root.
 #	Added extra logging of host, OS version, and rsync version.
 #	Removed .sh file extension from script.
@@ -38,8 +42,7 @@ exclusions=(".Trash" ".Trashes" ".Spotlight-*/" ".DocumentRevisions-*/" "/.fseve
 loggingDirectory="/Library/Logs/Counterpart/"
 pathToRsync="/usr/local/bin/rsync" # this is the default homebrew installed path
 serverBackupPath="/var/backups/counterpart" # this is the path that server data will be backed up to if the -b option is specified
-organisationPrefix="me.jedda" # change this if you want to customise the names of stats and flag files on disk
-version="1.2"
+version="1.2.1"
 
 # functions
 function counterpart_log {
@@ -47,7 +50,7 @@ function counterpart_log {
 	if [ ! -d "$loggingDirectory" ]; then
 	  mkdir $loggingDirectory
 	fi
-	echo  `date +"%b %d %T"`" Counterpart[$$]: $1" | tee -a $logPath
+	echo  `/bin/date +"%b %d %T"`" Counterpart[$$]: $1" | tee -a $logPath
 }
 function counterpart_exit {
 	if [ "$1" == "" ]; then
@@ -83,8 +86,8 @@ function counterpart_generate_stats {
 	echo $results | grep -E -o "Number of files transferred: ([0-9]+)" >> "$dst/.$organisationPrefix.counterpart.stats"
 	echo $results | grep -E -o "Total file size: ([0-9]+) bytes" >> "$dst/.$organisationPrefix.counterpart.stats"
 	echo $results | grep -E -o "Total transferred file size: ([0-9]+) bytes" >> "$dst/.$organisationPrefix.counterpart.stats"
-	echo "Clone Completed: "`date +%s` >> "$dst/.$organisationPrefix.counterpart.stats"
-	counterpart_log "Saved rsync stats to $dst.$organisationPrefix.counterpart.stats"
+	echo "Clone Completed: "`/bin/date +%s` >> "$dst/.$organisationPrefix.counterpart.stats"
+	counterpart_log "Saved rsync stats to $dst/.$organisationPrefix.counterpart.stats"
 }
 function backup_postgres {
 	# perform a dump of all postgresql databases
@@ -167,7 +170,7 @@ function backup_serversettings {
 	saSettingsDump=$(serveradmin -x settings all | bzip2 -c > $serverBackupPath/ServerSettings.plist.bz2 2>&1)
 }
 
-while getopts "s:d:b:p:o:e:th" optionName; do
+while getopts "s:d:b:p:o:e:g:th" optionName; do
 case "$optionName" in
 s) src=( "$OPTARG" );;
 d) dst=( "$OPTARG" );;
@@ -175,6 +178,7 @@ b) backup=( "$OPTARG" );;
 p) pre=( "$OPTARG" );;
 o) post=( "$OPTARG" );;
 e) excludeFrom=( "$OPTARG" );;
+g) organisationPrefix=( "$OPTARG" );;
 t) testRun="true";;
 h) printHelp="true";;
 esac
@@ -190,6 +194,7 @@ printf " -e\t\tpath to exclusion patterns file. this is checked and then passed 
 printf " -b:\t\tpassword for server backup. when this option is supplied with a password, Open Directory is archived (using the supplied password) and all PostgreSQL databases and serveradmin settings are dumped to disk before the clone occurs. this option is only supported on 10.7+ with OS X Server installed.\n"
 printf " -p\t\tpath to pre-clone script. this script will be executed before the clone occurs, and it's output will be logged.\n"
 printf " -o\t\tpath to post-clone script. this script will be executed after a successful clone occurs, and it's output will be logged.\n"
+printf " -g\t\ta custom organisation prefix. the default is me.jedda, but you may wish to supply your own to be used for counterparts output files.\n"
 printf " -t\t\tperform a test run. this will cause rsync to perform a verbose dry run, with output telling you what changes WOULD have been made. useful for troubleshooting.\n"
 printf " -h\t\tdisplay help.\n\n"
 printf "Requirements:\nCounterpart requires rsync 3.0.9 or later with acl and hfs-compression patches applied. The simplest way to install this on an Intel Mac running 10.6+ is to use Homebrew.\nInstructions on installing Homebrew and the appropriate version of rsync are available at http://jedda.me/counterpart/install/\n\n"
@@ -204,8 +209,8 @@ exit 0
 fi
 
 # setup our start timestamp and log file, and any other script variables
-startTimestamp=$(date +%s)
-logPath=$loggingDirectory"Counterpart_"`date -r $startTimestamp +%y-%m-%d_%H-%M-%S`
+startTimestamp=$(/bin/date +%s)
+logPath=$loggingDirectory"Counterpart_"`/bin/date -r $startTimestamp +%y-%m-%d_%H-%M-%S`
 host=$(hostname)
 osVersion=$(sw_vers | awk '/ProductVersion/{print substr($2,1,4)}' | tr -d ".")
 rsyncVersion=$(/usr/local/bin/rsync --version | grep 'version' | sed -E 's/ version ([0-9\.]+).+/\1/')
@@ -222,14 +227,20 @@ if [ ! -x "$pathToRsync" ]; then
 	counterpart_log "rsync does not exist (or is not executable) at $pathToRsync. Follow the instructions at http://jedda.me/counterpart/install to install the required version of rsync before running Counterpart."
 	counterpart_exit 85
 elif ! $pathToRsync --version | grep -q -E -o "version 3"; then
-	counterpart_log "Counterpart requires rsync version 3.0.7 or higher. Follow the instructions at http://jedda.me/counterpart/install to install the required version of rsync before running Counterpart."
+	counterpart_log "Counterpart requires rsync version 3.0.9 or higher. Follow the instructions at http://jedda.me/counterpart/install to install the required version of rsync before running Counterpart."
 	counterpart_exit 86
+fi
+
+# set our default organisation prefix if one has not been supplied
+if [ "$organisationPrefix" == "" ]; then
+organisationPrefix="me.jedda"
 fi
 
 # introduce ourselves
 counterpart_log "Counterpart version $version (`md5 $0 | awk '{ print substr($4,0,6) }'`)."
 counterpart_log "Logging to $logPath."
-counterpart_log "Running on $host (`sw_vers | awk '/ProductVersion/{print substr($2,1,6)}'`) with $rsyncVersion at $pathToRsync"
+counterpart_log "Output files will have the prefix $organisationPrefix.counterpart."
+counterpart_log "Running on $host (`sw_vers | awk '/ProductVersion/{print substr($2,1,6)}'`) with $rsyncVersion at $pathToRsync."
 
 # check that source is defined
 if [ "$src" == "" ]; then

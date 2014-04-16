@@ -11,6 +11,6 @@ The instructions below detail how to install Homebrew, Counterpart, and the requ
 2. Visit the [Homebrew site](http://brew.sh/), and scroll down to the "Install Homebrew" heading. As instructed, paste the ruby command listed into a Terminal prompt, and follow the prompts.
 3. At a Terminal prompt, run `brew doctor` to ensure Homebrew is installed correctly.
 4. At a Terminal prompt, run `brew tap homebrew/dupes` to add the repository rsync is stored in.
-5. At a Terminal prompt, run `brew install https://raw.github.com/jedda/homebrew-counterpart/master/counterpart.rb`. This will install the latest version of Counterpart, including the requisite rsync version.
-6. At a Terminal prompt, run `/usr/local/bin/rsync --version`, and verify that it displays version 3.0.9 or later.
+5. At a Terminal prompt, run `brew tap jedda/counterpart` to add the counterpart repository itself.
+6. At a Terminal prompt, run `brew install counterpart`. This will install the latest version of Counterpart, including the requisite rsync version.
 7. You are ready to run Counterpart. For help, check out the README, or run `counterpart -h`.

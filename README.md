@@ -13,6 +13,7 @@ counterpart -s [source] -d [destination] <options>
 				and serveradmin settings are dumped to disk before the clone occurs. this option is only supported on 10.7+ with OS X Server installed.
 *	 -p		:	path to pre-clone script. this script will be executed before the clone occurs, and it's output will be logged.
 *	 -o		:	path to post-clone script. this script will be executed after a successful clone occurs, and it's output will be logged.
+*	 -g		:	a custom organisation prefix. the default is 'me.jedda', but you may wish to supply your own to be used for counterpart's output files.
 *	 -t		:	perform a test run. this will cause rsync to perform a verbose dry run, with output telling you what changes WOULD have been made. useful for troubleshooting.
 *	 -h		:	display help.
 

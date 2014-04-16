@@ -17,11 +17,11 @@ Below, you will find an template launchd plist that can be used to schedule Coun
 
 Template Plist
 --------------
-`<?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN"
-  "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
-<plist version="1.0">
-<dict>
+    <?xml version="1.0" encoding="UTF-8"?>
+    <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN"
+    "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+    <plist version="1.0">
+    <dict>
     <key>Label</key>
     <string>me.jedda.counterpart</string>
     <key>ProgramArguments</key>
@@ -43,77 +43,10 @@ Template Plist
         <key>Minute</key>
         <integer>00</integer>
     </dict>
-</dict>
-</plist>`
-Example One
---------------
-This example schedules a clone from the root of the boot drive (/) to another mounted volume (/Volumes/Server Clone/) at 1:00AM each morning.
+    </dict>
+    </plist>
 
-`<?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN"
-  "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
-<plist version="1.0">
-<dict>
-    <key>Label</key>
-    <string>me.jedda.counterpart</string>
-    <key>ProgramArguments</key>
-    <array>
-    	<string>/usr/sbin/counterpart.sh</string>
-		<string>-s</string>
-		<string>/</string>
-		<string>-d</string>
-    	<string>/Volumes/Server Clone/</string>
-    </array>
-	<key>Nice</key>
-	<integer>19</integer>
-	<key>LowPriorityIO</key>
-	<true/>
-    <key>StartCalendarInterval</key>
-    <dict>
-        <key>Hour</key>
-        <integer>01</integer>
-        <key>Minute</key>
-        <integer>00</integer>
-    </dict>
-</dict>
-</plist>`
-Example Two
+Sample plist Files
 --------------
-This slightly more complex example again clones from the root of the boot drive (/) to another mounted volume (/Volumes/Server Clone/), but does so *twice* a day; at 8:30AM, and 6:00PM. It also reads a list of excluded files and patterns from a file at /etc/counterpart_exclusions, and does not include these in the clone (this can be useful if you don't want to take a full clone of non-personal data, like data from an Apple Software Update Server or Apple Caching Server).
 
-`<?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN"
-  "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
-<plist version="1.0">
-<dict>
-    <key>Label</key>
-    <string>me.jedda.counterpart</string>
-    <key>ProgramArguments</key>
-    <array>
-    	<string>/usr/sbin/counterpart.sh</string>
-		<string>-s</string>
-		<string>/</string>
-		<string>-d</string>
-    	<string>/Volumes/Server Clone/</string>
-		<string>-e</string>
-    	<string>/etc/counterpart_exclusions</string>
-    </array>
-	<key>Nice</key>
-	<integer>19</integer>
-	<key>LowPriorityIO</key>
-	<true/>
-    <key>StartCalendarInterval</key>
-    <dict>
-        <key>Hour</key>
-        <integer>08</integer>
-        <key>Minute</key>
-        <integer>30</integer>
-    </dict>
-    <dict>
-        <key>Hour</key>
-        <integer>18</integer>
-        <key>Minute</key>
-        <integer>00</integer>
-    </dict>
-</dict>
-</plist>`
+For some sample launchd plists showing how to configure a scheduled clone a few different ways, please see [me.jedda.counterpart.plist.simple.sample](https://github.com/jedda/Counterpart/blob/master/samples/me.jedda.counterpart.plist.simple.sample) and [me.jedda.counterpart.plist.complex.sample](https://github.com/jedda/Counterpart/blob/master/samples/me.jedda.counterpart.plist.complex.sample) in the samples directory of the Counterpart repotsitory.
