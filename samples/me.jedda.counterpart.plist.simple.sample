@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN"
+  "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>Label</key>
+    <string>me.jedda.counterpart</string>
+    <key>ProgramArguments</key>
+    <array>
+        <string>/usr/local/bin/counterpart</string>
+        <string>-s</string>
+        <string>/</string>
+        <string>-d</string>
+        <string>/Volumes/Server Clone</string>     
+    </array>
+    <key>Nice</key>
+    <integer>19</integer>
+    <key>LowPriorityIO</key>
+    <true/>
+    <key>StartCalendarInterval</key>
+    <dict>
+        <key>Hour</key>
+        <integer>01</integer>
+        <key>Minute</key>
+        <integer>00</integer>
+    </dict>
+</dict>
+</plist>

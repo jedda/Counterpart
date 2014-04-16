@@ -1,0 +1,13 @@
+#!/bin/bash
+
+# A sample pre-clone script that will dump MySQL databases before a Counterpart clone.
+
+echo "dumping MySQL data from `hostname`..."
+mysqldump -u root -pthemysqlpassword --all-databases | bzip2 -c > /var/backups/counterpart/MySQLAll.bz2
+EXITCODE=$?
+if [ $EXITCODE -eq 0 ] ; then 
+	echo 'successfully dumped all MySQL databases to /var/backups/counterpart/MySQLAll.bz2'
+else
+	echo "...encountered an issue dumping mysql databases ($EXITCODE)!"
+	exit $EXITCODE
+fi

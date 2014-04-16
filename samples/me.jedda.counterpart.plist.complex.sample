@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN"
+  "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>Label</key>
+    <string>me.jedda.counterpart</string>
+    <key>ProgramArguments</key>
+    <array>
+        <string>/usr/local/bin/counterpart</string>
+        <string>-s</string>
+        <string>/</string>
+        <string>-d</string>
+        <string>/Volumes/Server Clone/</string>
+        <string>-e</string>
+        <string>/etc/counterpart_exclusions</string>
+        <string>-b</string>
+        <string>secret</string>
+        <string>-p</string>
+        <string>/usr/local/sbin/counterpart_dump_mysql.sh</string>        
+    </array>
+    <key>Nice</key>
+    <integer>19</integer>
+    <key>LowPriorityIO</key>
+    <true/>
+    <key>StartInterval</key>
+    <integer>7200</integer>
+</dict>
+</plist>
