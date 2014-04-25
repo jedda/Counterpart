@@ -169,12 +169,31 @@ function backup_serversettings {
 	counterpart_log "Server backup: dumping service settings..."
 	saSettingsDump=$(serveradmin -x settings all | bzip2 -c > $serverBackupPath/ServerSettings.plist.bz2 2>&1)
 }
+function set_password {
+	read -sp "Enter the password used for the OSX Server archive: "
+	if [ "$REPLY" == "" ];then
+		echo -e "\nNo password specified.  Keychain item is unchanged.\n" 
+	else
+    	security add-generic-password -U -a "${kcAccount}" -s '${kcService}' -w "$REPLY" /Library/Keychains/System.keychain 2>/dev/null
+		if [ $? == 0 ]; then
+			echo -e "\nPassword successfully set for ${kcService}"
+			exit 0
+		else
+			echo -e "\nAn error occured when setting password"
+		fi
+	fi
+	exit 1
+}
+function get_password {
+    security find-generic-password -a "${kcAccount}" -s "${kcService}" -w /Library/Keychains/System.keychain
+}
 
-while getopts "s:d:b:p:o:e:g:th" optionName; do
+while getopts "s:d:Bb:p:o:e:g:th" optionName; do
 case "$optionName" in
 s) src=( "$OPTARG" );;
 d) dst=( "$OPTARG" );;
 b) backup=( "$OPTARG" );;
+B) backup2="true";;
 p) pre=( "$OPTARG" );;
 o) post=( "$OPTARG" );;
 e) excludeFrom=( "$OPTARG" );;
@@ -192,6 +211,7 @@ printf "Usage:\n$0 -s [source] -d [destination] <options>\n\n"
 printf "Options:\n"
 printf " -e\t\tpath to exclusion patterns file. this is checked and then passed to rsync as the --exclude-from option.\n"
 printf " -b:\t\tpassword for server backup. when this option is supplied with a password, Open Directory is archived (using the supplied password) and all PostgreSQL databases and serveradmin settings are dumped to disk before the clone occurs. this option is only supported on 10.7+ with OS X Server installed.\n"
+printf " -B\t\t\ same as -b, but will use a password stored in the system keychain.  You must run $0 setpass once prior to \n"
 printf " -p\t\tpath to pre-clone script. this script will be executed before the clone occurs, and it's output will be logged.\n"
 printf " -o\t\tpath to post-clone script. this script will be executed after a successful clone occurs, and it's output will be logged.\n"
 printf " -g\t\ta custom organisation prefix. the default is me.jedda, but you may wish to supply your own to be used for counterparts output files.\n"
@@ -234,6 +254,14 @@ fi
 # set our default organisation prefix if one has not been supplied
 if [ "$organisationPrefix" == "" ]; then
 organisationPrefix="me.jedda"
+fi
+
+# set up keychain and set password if requested
+kcAccount="counterpart"
+kcService="$organisationPrefix.$kcAccount"
+
+if [ "$1" == "setpass" ]; then
+	 set_password
 fi
 
 # introduce ourselves
@@ -300,6 +328,10 @@ if [ "$testRun" == "true" ]; then
 fi
 
 # check to see if we need to execute an os x server backup
+if [ "$backup2" == "true" ]; then
+	backup=`get_password`
+fi
+
 if [ "$backup" != "" ]; then
 	if [ ! -d "$serverBackupPath" ]; then
 		mkdir -p $serverBackupPath
