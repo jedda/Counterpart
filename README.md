@@ -11,6 +11,7 @@ counterpart -s [source] -d [destination] <options>
 *	 -e		:	path to exclusion patterns file. this is checked and then passed to rsync as the --exclude-from option.
 *	 -b		:	password for server backup. when this option is supplied with a password, Open Directory is archived (using the supplied password) and all PostgreSQL databases
 				and serveradmin settings are dumped to disk before the clone occurs. this option is only supported on 10.7+ with OS X Server installed.
+*	 -B		:	same as -b but will use a password stored in the system keychain.  You must run "/path/to/counterpart setpass" once prior to using this option.				
 *	 -p		:	path to pre-clone script. this script will be executed before the clone occurs, and it's output will be logged.
 *	 -o		:	path to post-clone script. this script will be executed after a successful clone occurs, and it's output will be logged.
 *	 -g		:	a custom organisation prefix. the default is 'me.jedda', but you may wish to supply your own to be used for counterpart's output files.
@@ -103,9 +104,9 @@ Exit codes from 3 through 35 mirror rsync's exit codes ([http://wpkg.org/Rsync\_
 - 85 : rsync is not at it's assumed homebrew path.
 - 86 : Wrong version of rsync.
 - 90 : Destination volume is set to 'Ignore ownership on this volume'. Volume will not be bootable, so counterpart wont clone.
-- 93 : Counterpart's server backup option (-b) requires Mac OS X 10.7+. This option was used on an earlier OS, and is not compatible. Remove the -b option, and try again.
-- 94 : Could not locate the serveradmin binary. Please ensure that OS X Server is installed correctly. If you do not want to backup OS X server data, simply omit the -b option.
-- 95 : Could not locate the pg_dumpall binary. Please ensure that OS X Server is installed correctly. If you do not want to backup OS X server data, simply omit the -b option.
+- 93 : Counterpart's server backup option (-b/-B)  requires Mac OS X 10.7+. This option was used on an earlier OS, and is not compatible. Remove the -b/-B option, and try again.
+- 94 : Could not locate the serveradmin binary. Please ensure that OS X Server is installed correctly. If you do not want to backup OS X server data, simply omit the -b/-B option.
+- 95 : Could not locate the pg_dumpall binary. Please ensure that OS X Server is installed correctly. If you do not want to backup OS X server data, simply omit the -b/-B option.
 - 96 : Counterpart encountered an error when dumping PostgreSQL databases as part of an OS X Server backup.
 
 ####Support, Bugs & Issues:
