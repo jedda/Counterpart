@@ -40,9 +40,12 @@
 # variables
 exclusions=(".Trash" ".Trashes" ".Spotlight-*/" ".DocumentRevisions-*/" "/.fseventsd" "/.hotfiles.btree" "/private/var/db/dyld/dyld_*" "/System/Library/Caches/com.apple.bootstamps/*" "/System/Library/Caches/com.apple.corestorage/*" "/System/Library/Caches/com.apple.kext.caches/*" "/Library/Caches/*" "/Volumes/*" "/dev/*" "/automount" "/Network" "/.vol/*" "/net" "/private/var/folders/*" "/private/var/vm/*" "/private/tmp/*" "/cores")
 loggingDirectory="/Library/Logs/Counterpart/"
-pathToRsync="/usr/local/bin/rsync" # this is the default homebrew installed path
 serverBackupPath="/var/backups/counterpart" # this is the path that server data will be backed up to if the -b option is specified
 version="1.2.1"
+
+# default macports and homebrew install paths
+pathToRsync=`which rsync`
+pathToRsync=`ls /opt/local/bin/rsync /usr/local/bin/rsync $pathToRsync 2>/dev/null | head -n 1`
 
 # functions
 function counterpart_log {
