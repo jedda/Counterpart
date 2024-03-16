@@ -40,9 +40,12 @@
 # variables
 exclusions=(".Trash" ".Trashes" ".Spotlight-*/" ".DocumentRevisions-*/" "/.fseventsd" "/.hotfiles.btree" "/private/var/db/dyld/dyld_*" "/System/Library/Caches/com.apple.bootstamps/*" "/System/Library/Caches/com.apple.corestorage/*" "/System/Library/Caches/com.apple.kext.caches/*" "/Library/Caches/*" "/Volumes/*" "/dev/*" "/automount" "/Network" "/.vol/*" "/net" "/private/var/folders/*" "/private/var/vm/*" "/private/tmp/*" "/cores")
 loggingDirectory="/Library/Logs/Counterpart/"
-pathToRsync="/usr/local/bin/rsync" # this is the default homebrew installed path
 serverBackupPath="/var/backups/counterpart" # this is the path that server data will be backed up to if the -b option is specified
 version="1.2.1"
+
+# default macports and homebrew install paths
+pathToRsync=`which rsync`
+pathToRsync=`ls /opt/local/bin/rsync /usr/local/bin/rsync $pathToRsync 2>/dev/null | head -n 1`
 
 # functions
 function counterpart_log {
@@ -292,10 +295,12 @@ if [ "$excludeFrom" != "" ]; then
 	fi
 fi
 
+rsyncArgs="--acls --archive --delete --delete-excluded $excludeString --hard-links --hfs-compression --one-file-system --protect-decmpfs --sparse --xattrs"
+
 # check to see if this is a test run
 if [ "$testRun" == "true" ]; then
 	counterpart_log "Test option specified. Performing a test run - will log all output below:"
-	$pathToRsync -n --acls --archive --delete --delete-excluded $excludeString --hard-links --hfs-compression --one-file-system --protect-decmpfs --sparse --verbose --xattrs "$src" "$dst" 2>&1 | tee -a $logPath
+	$pathToRsync -n $rsyncArgs --verbose "$src" "$dst" 2>&1 | tee -a $logPath
 	counterpart_exit 70
 fi
 
@@ -342,7 +347,7 @@ fi
 
 # time to spin up rsync
 counterpart_log "Running rsync clone..."
-results=$($pathToRsync --acls --archive --delete --delete-excluded $excludeString --hard-links --hfs-compression --one-file-system --protect-decmpfs --sparse --stats --xattrs "$src" "$dst" 2>&1)
+results=$($pathToRsync $rsyncArgs --stats "$src" "$dst" 2>&1)
 rsyncExitCode=$?
 
 # handle the rsync exit code
